@@ -12,4 +12,14 @@ public class UserService : BaseService<User, UserDto, IUserRepository>, IUserSer
     {
         
     }
+
+    public UserDto GetByEmail(string email)
+    {
+        return GetElementByExpression(q => q.Email == email);
+    }
+
+    public UserDto GetById(Guid id)
+    {
+        return GetElementByExpression(q => q.Id == id);
+    }
 }
