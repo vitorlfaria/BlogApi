@@ -14,5 +14,6 @@ public class UserMap : IEntityTypeConfiguration<User>
         builder.Property(c => c.Name).IsRequired();
         builder.Property(c => c.Email).IsRequired();
         builder.Property(c => c.Password).IsRequired();
+        builder.Property(c => c.CreatedAt).HasDefaultValueSql("GETDATE()");
     }
 }

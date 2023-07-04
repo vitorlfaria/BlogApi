@@ -12,5 +12,6 @@ public class TagMap : IEntityTypeConfiguration<Tag>
         builder.HasKey(x => x.Id);
         
         builder.Property(x => x.Name).IsRequired();
+        builder.Property(c => c.CreatedAt).HasDefaultValueSql("GETDATE()");
     }
 }
