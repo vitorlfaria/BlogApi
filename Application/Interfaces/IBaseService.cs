@@ -1,3 +1,5 @@
+using System.Linq.Expressions;
+
 namespace Application.Interfaces;
 
 public interface IBaseService<TDto> : IDisposable where TDto : class
@@ -17,4 +19,8 @@ public interface IBaseService<TDto> : IDisposable where TDto : class
     void RemoveRange(List<TDto> objs);
 
     void UpdateRange(IEnumerable<TDto> objs);
+    
+    IQueryable<TDto> GetByExpression(Expression<Func<TDto, bool>> expression, params string[] includes);
+
+    TDto GetElementByExpression(Expression<Func<TDto, bool>> expression, params string[] includes);
 }

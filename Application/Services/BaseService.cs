@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using Application.Interfaces;
 using AutoMapper;
 using Domain.Interfaces.Repositories;
@@ -65,5 +66,17 @@ public class BaseService<T, TDto, TR> : IBaseService<TDto>
     public void UpdateRange(IEnumerable<TDto> objs)
     {
         _repository.UpdateRange(_mapper.Map<IEnumerable<T>>(objs));
+    }
+
+    public IQueryable<TDto> GetByExpression(Expression<Func<TDto, bool>> expression, params string[] includes)
+    {
+        var result = _repository.GetByExpression(_mapper.Map<Expression<Func<T, bool>>>(expression), includes);
+        return _mapper.Map<IQueryable<TDto>>(result);
+    }
+
+    public TDto GetElementByExpression(Expression<Func<TDto, bool>> expression, params string[] includes)
+    {
+        var result = _repository.GetElementByExpression(_mapper.Map<Expression<Func<T, bool>>>(expression), includes);
+        return _mapper.Map<TDto>(result);
     }
 }
