@@ -11,10 +11,8 @@ public static class DependencyInjectionContainer
     public static void RegisterServices(IServiceCollection services)
     {
         /* Application */
-        services.AddScoped<IUserService, UserService>();
         
         /* Repository */
-        services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IBlogPostRepository, BlogPostRepository>();
         services.AddScoped<ITagRepository, TagRepository>();
     }
