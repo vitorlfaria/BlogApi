@@ -1,5 +1,6 @@
 using Application.DataTransferObjects;
 using Application.Interfaces;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BlogApi.Controllers
@@ -8,53 +9,45 @@ namespace BlogApi.Controllers
     [Route("api/[controller]")]
     public class UserController : ControllerBase
     {
-        private readonly IUserService _userService;
+        private readonly UserManager<IdentityUser> _userService;
         
-        public UserController(IUserService userService)
+        public UserController(UserManager<IdentityUser> userService)
         {
             _userService = userService;
-        }
+        } 
         
-        [HttpGet]
-        public IActionResult Get()
+        [HttpGet("{username}")]
+        public async Task<IActionResult> Get(string username)
         {
-            var users = _userService.GetAll();
-            return Ok(users);
-        }
-        
-        [HttpGet("{id:guid}")]
-        public IActionResult Get(Guid id)
-        {
-            var user = _userService.GetById(id);
-            return Ok(user);
-        }
-        
-        [HttpGet("{email}")]
-        public IActionResult Get(string email)
-        {
-            var user = _userService.GetByEmail(email);
+            var user = await _userService.FindByNameAsync(username);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
             return Ok(user);
         }
         
         [HttpPost]
         public IActionResult Post([FromBody] UserDto userDto)
         {
-            _userService.Add(userDto);
-            return Ok("User created successfully");
-        }
-        
-        [HttpPut]
-        public IActionResult Put([FromBody] UserDto userDto)
-        {
-            _userService.Update(userDto);
-            return Ok("User updated successfully");
-        }
-        
-        [HttpDelete("{id:guid}")]
-        public IActionResult Delete(Guid id)
-        {
-            _userService.Remove(id);
-            return Ok("User deleted successfully");
-        }
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            
+            var result = _userService.CreateAsync(
+                new IdentityUser() {Email = userDto.Email, UserName = userDto.Email},
+                userDto.Password
+            );
+
+            if (!result.IsCompletedSuccessfully)
+            {
+                return BadRequest(result.Exception);
+            }
+
+            userDto.Password = null;
+            return Created("User created successfully", userDto);
+        } 
     }
 }

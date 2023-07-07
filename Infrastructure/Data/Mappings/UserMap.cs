@@ -11,7 +11,7 @@ public class UserMap : IEntityTypeConfiguration<User>
         builder.ToTable(name: "User", schema: "dbo");
         builder.HasKey(q => q.Id);
 
-        builder.Property(c => c.Name).IsRequired();
+        builder.Property(c => c.UserName).IsRequired();
         builder.Property(c => c.Email).IsRequired();
         builder.Property(c => c.Password).IsRequired();
         builder.Property(c => c.CreatedAt).HasDefaultValueSql("GETDATE()");
