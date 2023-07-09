@@ -1,3 +1,4 @@
+using Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -5,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace Infrastructure.Data.Context;
 
-public class BaseContext : IdentityUserContext<IdentityUser>
+public class BaseContext : IdentityDbContext<User>
 {
     public BaseContext(DbContextOptions<BaseContext> options)
         : base(options)
