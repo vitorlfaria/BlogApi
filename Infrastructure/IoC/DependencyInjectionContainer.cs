@@ -11,6 +11,7 @@ public static class DependencyInjectionContainer
     public static void RegisterServices(IServiceCollection services)
     {
         /* Application */
+        services.AddScoped<IJwtService, JwtService>();
         
         /* Repository */
         services.AddScoped<IBlogPostRepository, BlogPostRepository>();

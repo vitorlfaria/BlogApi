@@ -25,6 +25,7 @@ builder.Services.AddIdentityCore<User>(options =>
     options.Password.RequiredLength = 6;
     options.User.RequireUniqueEmail = true;
 }).AddEntityFrameworkStores<BaseContext>();
+builder.Services.AddAuthenticationSetup();
 
 var app = builder.Build();
 
@@ -36,6 +37,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

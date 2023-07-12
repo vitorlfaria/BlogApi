@@ -2,6 +2,7 @@ using Application.DataTransferObjects;
 using Application.Interfaces;
 using AutoMapper;
 using Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,11 +14,13 @@ namespace BlogApi.Controllers
     {
         private readonly UserManager<User> _userService;
         private readonly IMapper _mapper;
+        private readonly IJwtService _jwtService;
         
-        public UserController(UserManager<User> userService, IMapper mapper)
+        public UserController(UserManager<User> userService, IMapper mapper, IJwtService jwtService)
         {
             _userService = userService;
             _mapper = mapper;
+            _jwtService = jwtService;
         } 
         
         [HttpGet]
@@ -26,6 +29,7 @@ namespace BlogApi.Controllers
             return Ok(_userService.Users);
         }
         
+        [Authorize]
         [HttpGet("{username}")]
         public async Task<IActionResult> GetByUserName(string username)
         {
@@ -75,7 +79,33 @@ namespace BlogApi.Controllers
                 return BadRequest(result.Errors);
             }
 
-            return NoContent();
+            return Ok("User deleted successfully");
+        }
+        [HttpPost("Login")]
+        public async Task<ActionResult<AuthenticationResponse>> CreateBearerToken(AuthenticationRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest("Bad credentials");
+            }
+        
+            var user = await _userService.FindByNameAsync(request.UserName);
+        
+            if (user == null)
+            {
+                return BadRequest("Bad credentials");
+            }
+        
+            var isPasswordValid = await _userService.CheckPasswordAsync(user, request.Password);
+        
+            if (!isPasswordValid)
+            {
+                return BadRequest("Bad credentials");
+            }
+        
+            var token = _jwtService.CreateToken(user);
+        
+            return Ok(token);
         }
     }
 }
