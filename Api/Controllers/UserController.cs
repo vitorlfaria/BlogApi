@@ -10,17 +10,16 @@ namespace BlogApi.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class UserController : ControllerBase
     {
         private readonly UserManager<User> _userService;
         private readonly IMapper _mapper;
-        private readonly IJwtService _jwtService;
         
-        public UserController(UserManager<User> userService, IMapper mapper, IJwtService jwtService)
+        public UserController(UserManager<User> userService, IMapper mapper)
         {
             _userService = userService;
             _mapper = mapper;
-            _jwtService = jwtService;
         } 
         
         [HttpGet]
@@ -29,7 +28,6 @@ namespace BlogApi.Controllers
             return Ok(_userService.Users);
         }
         
-        [Authorize]
         [HttpGet("{username}")]
         public async Task<IActionResult> GetByUserName(string username)
         {
@@ -64,6 +62,29 @@ namespace BlogApi.Controllers
             return CreatedAtAction("GetByUserName", new { username = userDto.UserName }, userDto);
         } 
         
+        [HttpPut]
+        public async Task<IActionResult> Put([FromBody] UserDto userDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var user = await _userService.FindByNameAsync(userDto.UserName);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var result = await _userService.UpdateAsync(_mapper.Map<User>(userDto));
+            if (!result.Succeeded)
+            {
+                return BadRequest(result.Errors);
+            }
+
+            return Ok("User updated successfully");
+        }
+        
         [HttpDelete("{username}")]
         public async Task<IActionResult> Delete(string username)
         {
@@ -80,32 +101,6 @@ namespace BlogApi.Controllers
             }
 
             return Ok("User deleted successfully");
-        }
-        [HttpPost("Login")]
-        public async Task<ActionResult<AuthenticationResponse>> CreateBearerToken(AuthenticationRequest request)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest("Bad credentials");
-            }
-        
-            var user = await _userService.FindByNameAsync(request.UserName);
-        
-            if (user == null)
-            {
-                return BadRequest("Bad credentials");
-            }
-        
-            var isPasswordValid = await _userService.CheckPasswordAsync(user, request.Password);
-        
-            if (!isPasswordValid)
-            {
-                return BadRequest("Bad credentials");
-            }
-        
-            var token = _jwtService.CreateToken(user);
-        
-            return Ok(token);
         }
     }
 }
