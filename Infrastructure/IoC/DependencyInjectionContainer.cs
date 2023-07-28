@@ -16,5 +16,6 @@ public static class DependencyInjectionContainer
         /* Repository */
         services.AddScoped<IBlogPostRepository, BlogPostRepository>();
         services.AddScoped<ITagRepository, TagRepository>();
+        services.AddScoped<IUserApiKeyRepository, UserApiKeyRepository>();
     }
 }
