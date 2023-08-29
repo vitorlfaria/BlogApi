@@ -12,6 +12,7 @@ public static class DependencyInjectionContainer
     {
         /* Application */
         services.AddScoped<IJwtService, JwtService>();
+        services.AddScoped<IApiKeyService, ApiKeyService>();
         
         /* Repository */
         services.AddScoped<IBlogPostRepository, BlogPostRepository>();
