@@ -41,6 +41,7 @@ namespace BlogApi.Controllers
         }
         
         [HttpPost]
+        [AllowAnonymous]
         public async Task<IActionResult> Post([FromBody] UserDto userDto)
         {
             if (!ModelState.IsValid)
