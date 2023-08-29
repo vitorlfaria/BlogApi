@@ -1,4 +1,6 @@
 using System.Text;
+using Infrastructure.Handlers;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
@@ -36,6 +38,10 @@ public static class AuthenticationSetup
                         Encoding.UTF8.GetBytes(_configuration["Jwt:Key"])
                     )
                 };
-            });
+            })
+            .AddScheme<AuthenticationSchemeOptions, ApiKeyAuthenticationHandler>(
+                "ApiKey",
+                options => { }    
+            );
     }
 }
