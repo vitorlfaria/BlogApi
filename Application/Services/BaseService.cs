@@ -10,8 +10,8 @@ public class BaseService<T, TDto, TR> : IBaseService<TDto>
     where TDto : class
     where TR : IBaseRepository<T>
 {
-    private readonly IMapper _mapper;
-    private readonly TR _repository;
+    protected readonly IMapper _mapper;
+    protected readonly TR _repository;
 
     public BaseService(TR repository, IMapper mapper)
     {
