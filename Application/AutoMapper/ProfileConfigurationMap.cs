@@ -11,5 +11,6 @@ public class ProfileConfigurationMap : Profile
         CreateMap<User, UserDto>().ReverseMap();
         CreateMap<Tag, TagDto>().ReverseMap();
         CreateMap<BlogPost, BlogPostDto>().ReverseMap();
+        CreateMap<UserApiKey, UserApiKeyDto>().ReverseMap();
     }
 }
