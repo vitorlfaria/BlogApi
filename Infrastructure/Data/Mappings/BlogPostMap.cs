@@ -14,7 +14,6 @@ public class BlogPostMap : IEntityTypeConfiguration<BlogPost>
         builder.Property(c => c.Title).IsRequired();
         builder.Property(c => c.Content).IsRequired();
         builder.Property(c => c.AuthorId).IsRequired();
-        builder.Property(c => c.CreatedAt).HasDefaultValueSql("GETDATE()");
         
         builder.HasOne(q => q.Author).WithMany().HasForeignKey(q => q.AuthorId).OnDelete(DeleteBehavior.Restrict);
     }
