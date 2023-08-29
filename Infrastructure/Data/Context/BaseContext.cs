@@ -37,34 +37,19 @@ public class BaseContext : IdentityDbContext<User>
     public override int SaveChanges()
     {
         var entries = (from entry in ChangeTracker.Entries()
-            where entry.State == EntityState.Added || entry.State == EntityState.Deleted || entry.State == EntityState.Modified
+            where entry.State is EntityState.Added or EntityState.Modified
             select entry).ToList();
 
-        try
+        foreach (var entityEntry in entries)
         {
-            base.SaveChanges();
-        }
-        catch (DbUpdateException ex)
-        {
-            string textError = string.Empty;
-            foreach (var entityEntry in base.ChangeTracker.Entries().Where(et => et.State != EntityState.Unchanged))
+            ((Entity)entityEntry.Entity).UpdatedAt = DateTime.Now;
+            
+            if (entityEntry.State == EntityState.Added)
             {
-                foreach (var entry in entityEntry.CurrentValues.Properties)
-                {
-                    var prop = entityEntry.Property(entry.Name).Metadata;
-                    var value = entry.PropertyInfo?.GetValue(entityEntry.Entity);
-                    var valueLength = value?.ToString()?.Length;
-                    var typemapping = prop.GetTypeMapping();
-                    var typeSize = ((Microsoft.EntityFrameworkCore.Storage.RelationalTypeMapping)typemapping).Size;
-                    if (typeSize.HasValue && valueLength > typeSize.Value)
-                    {
-                        textError += $"Truncation will occur: {entityEntry.Metadata.GetTableName()}.{prop.GetColumnName()} {prop.GetColumnType()} :: {entry.Name}({valueLength}) = {value}";
-                    }
-                }
+                ((Entity)entityEntry.Entity).CreatedAt = DateTime.Now;
             }
-            throw ex;
         }
-
+        
         return base.SaveChanges();
     }
 }
